@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>TrueU — Know what's running you</title>
+<meta name="description" content="You're not broken. You're running an old program. TrueU shows you what it is.">
+<meta property="og:title" content="TrueU — Know what's running you">
+<meta property="og:description" content="Every reaction that felt too big. Every relationship that repeated itself. That was the program. Find out yours in 5 minutes.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="TrueU — Know what's running you">
+<meta name="twitter:description" content="Every reaction that felt too big. Every relationship that repeated itself. That was the program. Find out yours in 5 minutes.">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #ffffff;
+    --bg2: #f8f8f6;
+    --bg3: #f1efe8;
+    --text: #1a1a1a;
+    --text2: #6b6b67;
+    --text3: #9b9b97;
+    --border: rgba(0,0,0,0.12);
+    --border2: rgba(0,0,0,0.25);
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1a1a1a;
+      --bg2: #242424;
+      --bg3: #2e2e2e;
+      --text: #f0efe8;
+      --text2: #a0a09a;
+      --text3: #6b6b67;
+      --border: rgba(255,255,255,0.12);
+      --border2: rgba(255,255,255,0.25);
+    }
+  }
+
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .app {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 2rem 1.25rem 4rem;
+  }
+
+  .inner {
+    width: 100%;
+    max-width: 440px;
+  }
+
+  .logo {
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+    color: var(--text);
+    margin-bottom: 2.5rem;
+  }
+
+  .logo span { color: var(--text2); }
+
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  .big { font-size: 26px; font-weight: 600; line-height: 1.35; color: var(--text); margin-bottom: 0.75rem; }
+  .sub { font-size: 17px; color: var(--text2); line-height: 1.65; margin-bottom: 2.5rem; }
+
+  .btn {
+    width: 100%;
+    padding: 16px;
+    background: var(--text);
+    color: var(--bg);
+    border: none;
+    border-radius: var(--radius);
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.15s;
+    margin-top: 0.5rem;
+  }
+  .btn:hover { opacity: 0.82; }
+  .btn:active { opacity: 0.7; transform: scale(0.99); }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--text);
+    border: 0.5px solid var(--border2);
+    margin-top: 0.75rem;
+  }
+  .btn-outline:hover { background: var(--bg2); }
+
+  .progress {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 2rem;
+  }
+  .dot {
+    flex: 1;
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    transition: background 0.3s;
+  }
+  .dot.done { background: var(--text); }
+  .dot.active { background: var(--text2); }
+
+  .qnum {
+    font-size: 13px;
+    color: var(--text3);
+    margin-bottom: 1rem;
+  }
+
+  .question {
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.5;
+    margin-bottom: 1.75rem;
+  }
+
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .option {
+    padding: 15px 16px;
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 15px;
+    color: var(--text);
+    cursor: pointer;
+    background: var(--bg);
+    text-align: left;
+    line-height: 1.5;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .option:hover {
+    border-color: var(--border2);
+    background: var(--bg2);
+  }
+  .option:active { transform: scale(0.99); }
+
+  .result-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 1.5rem;
+  }
+
+  .result-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    flex-shrink: 0;
+  }
+
+  .result-name {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.2;
+  }
+
+  .tag {
+    display: inline-block;
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: var(--radius-sm);
+    margin-top: 5px;
+  }
+
+  .result-desc {
+    font-size: 16px;
+    color: var(--text2);
+    line-height: 1.75;
+    margin-bottom: 1.5rem;
+  }
+
+  .insight {
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    margin-bottom: 0.75rem;
+    background: var(--bg2);
+  }
+
+  .insight-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text3);
+    margin-bottom: 6px;
+  }
+
+  .insight-text {
+    font-size: 15px;
+    color: var(--text);
+    line-height: 1.65;
+  }
+
+  .divider {
+    height: 0.5px;
+    background: var(--border);
+    margin: 1.5rem 0;
+  }
+
+  .share-msg {
+    font-size: 14px;
+    color: var(--text3);
+    text-align: center;
+    margin-top: 1.25rem;
+    line-height: 1.6;
+  }
+
+  .by {
+    font-size: 13px;
+    color: var(--text3);
+    text-align: center;
+    margin-top: 2rem;
+  }
+
+  .by a {
+    color: var(--text2);
+    text-decoration: none;
+  }
+
+  .by a:hover { text-decoration: underline; }
+
+  .fade-in {
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="inner">
+    <div class="logo">True<span>U</span></div>
+
+    <div class="screen active fade-in" id="s0">
+      <div class="big">You're not broken.</div>
+      <div class="sub">You're running an old program.</div>
+      <button class="btn" onclick="go('s0','s1')">Continue</button>
+    </div>
+
+    <div class="screen" id="s1">
+      <div class="big">Every reaction that felt too big. Every relationship that repeated itself.</div>
+      <div class="sub">That was the program.</div>
+      <button class="btn" onclick="go('s1','s2')">Continue</button>
+    </div>
+
+    <div class="screen" id="s2">
+      <div class="big">TrueU shows you what's running.</div>
+      <div class="sub">So you can finally choose something different.<br>Takes about 5 minutes.</div>
+      <button class="btn" onclick="startQuiz()">Show me</button>
+    </div>
+
+    <div class="screen" id="quiz">
+      <div class="progress" id="progress"></div>
+      <div class="qnum" id="qnum"></div>
+      <div class="question" id="qtext"></div>
+      <div class="options" id="opts"></div>
+    </div>
+
+    <div class="screen" id="result">
+      <div id="result-content"></div>
+
+      <div class="divider"></div>
+
+      <button class="btn" onclick="restart()">Take it again</button>
+      <button class="btn btn-outline" onclick="shareResult()">Share my result</button>
+
+      <p class="share-msg">Send this to someone who knows you well.<br>Ask them if it's accurate.</p>
+
+      <p class="by">Based on <a href="https://www.amazon.com" target="_blank">Dethroned</a> by Sisto Zavala</p>
+    </div>
+  </div>
+</div>
+
+<script>
+var questions = [
+  {
+    q: "Someone gives you feedback you didn't ask for. What happens inside you first?",
+    opts: [
+      { text: "I immediately start explaining why I did it that way", type: "A" },
+      { text: "I wonder if they're right and feel bad about myself", type: "H" },
+      { text: "I smile and nod but go quiet inside", type: "W" },
+      { text: "I think about how I'm coming across right now", type: "P" }
+    ]
+  },
+  {
+    q: "A relationship in your life feels one-sided. You give more than you get. What do you do?",
+    opts: [
+      { text: "Keep giving — stepping back feels like failure", type: "H" },
+      { text: "Pull back without saying anything", type: "W" },
+      { text: "Get frustrated but keep it together on the outside", type: "P" },
+      { text: "Try harder to fix the dynamic", type: "A" }
+    ]
+  },
+  {
+    q: "You walk into a room where you don't know anyone. Your first move:",
+    opts: [
+      { text: "Find a way to show I know what I'm talking about", type: "A" },
+      { text: "Look for someone who seems lonely and start there", type: "H" },
+      { text: "Find a corner and observe before engaging", type: "W" },
+      { text: "Read the room and figure out what role to play", type: "P" }
+    ]
+  },
+  {
+    q: "Someone you love is pulling away. You can feel it but they won't say why. You:",
+    opts: [
+      { text: "Think of every solution I can offer", type: "A" },
+      { text: "Do more for them hoping they'll notice", type: "H" },
+      { text: "Give them space — getting closer feels risky", type: "W" },
+      { text: "Act normal and hope they don't notice I noticed", type: "P" }
+    ]
+  },
+  {
+    q: "You made a mistake that affected someone you care about. Your first instinct:",
+    opts: [
+      { text: "Explain what I was thinking so they understand why", type: "A" },
+      { text: "Apologize immediately and do whatever it takes to fix it", type: "H" },
+      { text: "Go quiet — I need time before I can face this", type: "W" },
+      { text: "Worry about how they see me now", type: "P" }
+    ]
+  },
+  {
+    q: "Someone walks in and commands attention without trying. You feel:",
+    opts: [
+      { text: "Curious — I want to know what they know", type: "A" },
+      { text: "Drawn to them — I want to connect", type: "H" },
+      { text: "A little unsettled — something feels off", type: "W" },
+      { text: "Self-conscious about how I'm coming across now", type: "P" }
+    ]
+  },
+  {
+    q: "When things get really hard, what do you secretly wish someone would say?",
+    opts: [
+      { text: "You're the most capable person I know", type: "A" },
+      { text: "I don't know what I'd do without you", type: "H" },
+      { text: "I'm not going anywhere — you're safe", type: "W" },
+      { text: "Everyone sees how incredible you are", type: "P" }
+    ]
+  },
+  {
+    q: "A close friend tells you something hard about yourself. Your gut reaction:",
+    opts: [
+      { text: "Defend myself — I have reasons for how I am", type: "A" },
+      { text: "Take it hard — I care so much about how I affect people", type: "H" },
+      { text: "Shut down — I need time before I can hear this", type: "W" },
+      { text: "Wonder what else they think that they haven't said", type: "P" }
+    ]
+  }
+];
+
+var profiles = {
+  A: {
+    name: "The Armor",
+    tag: "Competence as protection",
+    tagBg: "#dbeafe",
+    tagColor: "#1e40af",
+    iconBg: "#dbeafe",
+    icon: "🛡️",
+    desc: "You protect yourself by being the most capable person in the room. Your worth is tied to what you know and what you can do. When someone questions your thinking it doesn't just feel like feedback — it feels like a threat to who you are.",
+    truth: "The people who love you most don't need you to have all the answers. They just need you to be there.",
+    shift: "Next time you feel the urge to explain yourself — pause. Ask a question instead. See what happens."
+  },
+  H: {
+    name: "The Helper",
+    tag: "Needed as safety",
+    tagBg: "#dcfce7",
+    tagColor: "#166534",
+    iconBg: "#dcfce7",
+    icon: "🤝",
+    desc: "You protect yourself by being needed. If you're useful enough maybe no one will leave. You give generously — but underneath the giving is a question you're afraid to answer: am I lovable without what I do for people?",
+    truth: "You were lovable before you did anything. The giving is beautiful. The fear underneath it doesn't have to run the show.",
+    shift: "Let someone do something for you today without deflecting or immediately returning the favor. Just receive it."
+  },
+  W: {
+    name: "The Wall",
+    tag: "Distance as safety",
+    tagBg: "#ede9fe",
+    tagColor: "#5b21b6",
+    iconBg: "#ede9fe",
+    icon: "🌊",
+    desc: "You protect yourself by never fully arriving. Present enough to connect but guarded enough to leave quickly if you need to. Intimacy feels like exposure. You learned that keeping a little back was the safest thing.",
+    truth: "The wall kept you safe once. It's costing you now. The people worth staying for won't use your openness against you.",
+    shift: "Tell one person one true thing about how you're actually doing. Not the edited version. The real one."
+  },
+  P: {
+    name: "The Performer",
+    tag: "Perception as control",
+    tagBg: "#fce7f3",
+    tagColor: "#9d174d",
+    iconBg: "#fce7f3",
+    icon: "🎭",
+    desc: "You protect yourself by managing how you're perceived. You're good at reading rooms and becoming what's needed. The cost is that sometimes you lose track of who you actually are underneath the performance.",
+    truth: "The version of you that isn't performing is the one people actually want to know. You just have to let them see it.",
+    shift: "Do one thing today that you'd normally edit for an audience. Don't edit it. See who shows up for it."
+  }
+};
+
+var answers = { A: 0, H: 0, W: 0, P: 0 };
+var current = 0;
+var topProfile = null;
+
+function go(from, to) {
+  document.getElementById(from).classList.remove('active');
+  var el = document.getElementById(to);
+  el.classList.add('active');
+  el.classList.add('fade-in');
+  setTimeout(function() { el.classList.remove('fade-in'); }, 400);
+}
+
+function startQuiz() {
+  answers = { A: 0, H: 0, W: 0, P: 0 };
+  current = 0;
+  go('s2', 'quiz');
+  renderQuestion();
+}
+
+function renderProgress() {
+  var p = document.getElementById('progress');
+  var html = '';
+  for (var i = 0; i < questions.length; i++) {
+    if (i < current) html += '<div class="dot done"></div>';
+    else if (i === current) html += '<div class="dot active"></div>';
+    else html += '<div class="dot"></div>';
+  }
+  p.innerHTML = html;
+}
+
+function renderQuestion() {
+  renderProgress();
+  var q = questions[current];
+  document.getElementById('qnum').textContent = 'Question ' + (current + 1) + ' of ' + questions.length;
+  document.getElementById('qtext').textContent = q.q;
+
+  var shuffled = q.opts.slice().sort(function() { return Math.random() - 0.5; });
+
+  var html = '';
+  for (var i = 0; i < shuffled.length; i++) {
+    var type = shuffled[i].type;
+    var text = shuffled[i].text;
+    html += '<button class="option" onclick="answer(\'' + type + '\')">' + text + '</button>';
+  }
+  document.getElementById('opts').innerHTML = html;
+}
+
+function answer(type) {
+  answers[type]++;
+  current++;
+  if (current >= questions.length) {
+    showResult();
+  } else {
+    var quiz = document.getElementById('quiz');
+    quiz.classList.add('fade-in');
+    setTimeout(function() { quiz.classList.remove('fade-in'); }, 400);
+    renderQuestion();
+  }
+}
+
+function showResult() {
+  var sorted = Object.entries(answers).sort(function(a, b) { return b[1] - a[1]; });
+  topProfile = sorted[0][0];
+  var p = profiles[topProfile];
+
+  var html = '<div class="result-header">' +
+    '<div class="result-icon" style="background:' + p.iconBg + '">' + p.icon + '</div>' +
+    '<div>' +
+      '<div class="result-name">' + p.name + '</div>' +
+      '<span class="tag" style="background:' + p.tagBg + ';color:' + p.tagColor + '">' + p.tag + '</span>' +
+    '</div>' +
+  '</div>' +
+  '<p class="result-desc">' + p.desc + '</p>' +
+  '<div class="insight">' +
+    '<div class="insight-label">The truth</div>' +
+    '<div class="insight-text">' + p.truth + '</div>' +
+  '</div>' +
+  '<div class="insight">' +
+    '<div class="insight-label">One shift</div>' +
+    '<div class="insight-text">' + p.shift + '</div>' +
+  '</div>';
+
+  document.getElementById('result-content').innerHTML = html;
+  go('quiz', 'result');
+}
+
+function restart() {
+  answers = { A: 0, H: 0, W: 0, P: 0 };
+  current = 0;
+  go('result', 's0');
+}
+
+function shareResult() {
+  if (!topProfile) return;
+  var p = profiles[topProfile];
+  var text = 'I just took TrueU and got "' + p.name + '" — ' + p.tag + '. Take it and tell me if yours is accurate: ' + window.location.href;
+
+  if (navigator.share) {
+    navigator.share({
+      title: 'My TrueU result: ' + p.name,
+      text: text,
+      url: window.location.href
+    });
+  } else if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(function() {
+      alert('Copied to clipboard! Paste it anywhere to share.');
+    });
+  } else {
+    alert('Your result: ' + p.name + '\n\n' + p.tag + '\n\nShare this link: ' + window.location.href);
+  }
+}
+</script>
+</body>
+</html>
