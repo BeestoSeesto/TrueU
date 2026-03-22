@@ -37,4 +37,84 @@
   .btn-ghost:hover { color: var(--warm-text); border-color: var(--warm-text); background: transparent; transform: none; }
   .progress-wrap { margin-bottom: 2.5rem; }
   .progress-bg { height: 3px; background: var(--warm-border); border-radius: 2px; overflow: hidden; margin-bottom: 8px; }
-  .progress-fill { height: 100%; background: var(--warm-text); borde
+  .progress-fill { height: 100%; background: var(--warm-text); border-radius: 2px; transition: width 0.4s ease; }
+  .progress-label { font-size: 12px; color: var(--warm-hint); font-weight: 500; }
+  .question { font-size: 21px; font-weight: 600; line-height: 1.45; margin-bottom: 2rem; letter-spacing: -0.4px; }
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option { padding: 16px 18px; border: 1px solid var(--warm-border); border-radius: 14px; font-size: 15px; color: var(--warm-text); cursor: pointer; background: var(--warm-surface); text-align: left; line-height: 1.55; transition: all 0.18s; font-family: inherit; }
+  .option:hover { border-color: var(--warm-text); transform: translateX(3px); }
+  .option.selected { border-color: var(--warm-text); background: var(--warm-text); color: var(--warm-bg); transform: translateX(3px); }
+  .result-hero { border-radius: 20px; padding: 2rem; margin-bottom: 1.25rem; }
+  .profile-emoji { font-size: 38px; margin-bottom: 1rem; display: block; }
+  .profile-name { font-size: 26px; font-weight: 600; letter-spacing: -0.8px; margin-bottom: 8px; }
+  .profile-tag { display: inline-block; font-size: 12px; font-weight: 500; padding: 5px 12px; border-radius: 20px; margin-bottom: 1.5rem; }
+  .profile-desc { font-size: 15px; line-height: 1.75; opacity: 0.88; }
+  .insight-cards { display: flex; flex-direction: column; gap: 10px; margin-bottom: 1.5rem; }
+  .insight-card { background: var(--warm-surface); border: 1px solid var(--warm-border); border-radius: 14px; padding: 1.25rem; }
+  .insight-label { font-size: 11px; font-weight: 600; color: var(--warm-hint); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
+  .insight-text { font-size: 15px; color: var(--warm-text); line-height: 1.65; }
+  .share-note { font-size: 13px; color: var(--warm-hint); text-align: center; margin-top: 1rem; line-height: 1.6; }
+  .byline { text-align: center; font-size: 12px; color: var(--warm-hint); margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid var(--warm-border); }
+  .byline a { color: var(--warm-text); text-decoration: none; font-weight: 500; }
+  @media (prefers-color-scheme: dark) {
+    :root { --warm-bg: #141412; --warm-surface: #1E1E1C; --warm-border: #2E2E2C; --warm-text: #F0EDE8; --warm-muted: #9E9B96; --warm-hint: #6B6860; }
+    .logo-mark { background: var(--warm-text); }
+    .logo-mark span { color: var(--warm-bg); }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="logo">
+    <div class="logo-mark"><span>T</span></div>
+    True<em>U</em>
+  </div>
+
+  <div class="screen active" id="s0">
+    <div class="statement">You're not broken.</div>
+    <div class="sub">You're running an old program.</div>
+    <button class="btn" onclick="goNext(0)">Continue</button>
+  </div>
+
+  <div class="screen" id="s1">
+    <div class="statement">Every reaction that felt too big.</div>
+    <div class="sub">Every relationship that repeated itself. Every time you couldn't explain why you did what you did.<br><br>That was the program.</div>
+    <button class="btn" onclick="startQuiz()">Show me mine</button>
+  </div>
+
+  <div class="screen" id="quiz">
+    <div class="progress-wrap">
+      <div class="progress-bg"><div class="progress-fill" id="pfill"></div></div>
+      <div class="progress-label" id="plabel"></div>
+    </div>
+    <div class="question" id="qtext"></div>
+    <div class="options" id="opts"></div>
+  </div>
+
+  <div class="screen" id="result">
+    <div class="result-hero" id="rhero"></div>
+    <div class="insight-cards" id="icards"></div>
+    <button class="btn" id="sbtn" onclick="shareResult()">Share your result</button>
+    <button class="btn btn-ghost" onclick="restart()">Take it again</button>
+    <p class="share-note">Send this to someone who knows you well.<br>Ask if they agree.</p>
+    <div class="byline">Built by <a href="https://www.linkedin.com/in/sistozavala" target="_blank">Sisto Zavala</a> &nbsp;·&nbsp; <a href="https://true-u.vercel.app" target="_blank">Dethroned — the book</a></div>
+  </div>
+</div>
+
+<script>
+const Q=[{q:"Someone gives you feedback you didn't ask for. What happens inside you first?",opts:[{t:"I immediately start explaining why I did it that way",y:"A"},{t:"I wonder if they're right and feel bad about myself",y:"H"},{t:"I smile and nod but go quiet inside",y:"W"},{t:"I think about how I'm coming across right now",y:"P"}]},{q:"A relationship feels one-sided. You're giving more than you're getting. What do you do?",opts:[{t:"Keep giving — stepping back feels like failure",y:"H"},{t:"Pull back without saying anything",y:"W"},{t:"Get frustrated but keep it together on the outside",y:"P"},{t:"Try harder to fix the dynamic",y:"A"}]},{q:"You walk into a room where you don't know anyone. What's your first move?",opts:[{t:"Find a way to show I know what I'm talking about",y:"A"},{t:"Look for someone who seems lonely and start there",y:"H"},{t:"Find a quiet corner and observe before engaging",y:"W"},{t:"Read the room and figure out what role to play",y:"P"}]},{q:"Someone you love is pulling away. You can feel it but they won't say why. You:",opts:[{t:"Research and think of every solution I can offer",y:"A"},{t:"Do more for them hoping they'll notice",y:"H"},{t:"Give them space — getting closer feels risky",y:"W"},{t:"Act normal and hope they don't notice I noticed",y:"P"}]},{q:"You made a mistake that affected someone you care about. Your first instinct:",opts:[{t:"Explain what I was thinking so they understand why",y:"A"},{t:"Apologize and do whatever it takes to fix it",y:"H"},{t:"Go quiet — I don't know how to handle this yet",y:"W"},{t:"Worry about how they see me now",y:"P"}]},{q:"Someone walks into a room and commands attention without trying. You feel:",opts:[{t:"Curious — I want to know what they know",y:"A"},{t:"Drawn to them — I want to connect",y:"H"},{t:"A little unsettled — something feels threatened",y:"W"},{t:"Self-conscious — aware of how I'm coming across now",y:"P"}]},{q:"When things get really hard, what do you secretly wish someone would say?",opts:[{t:"You're the most capable person I know",y:"A"},{t:"I don't know what I'd do without you",y:"H"},{t:"I'm not going anywhere — you're safe",y:"W"},{t:"Everyone sees how incredible you are",y:"P"}]},{q:"A close friend tells you something hard about yourself. Your gut reaction:",opts:[{t:"Defend myself — I have reasons for how I am",y:"A"},{t:"Take it hard — I care so much about how I affect people",y:"H"},{t:"Shut down — I need time before I can hear this",y:"W"},{t:"Wonder what else they think that they haven't said",y:"P"}]}];
+
+const PR={A:{name:"The Armor",tag:"Competence as protection",emoji:"🛡️",bg:"linear-gradient(135deg,#1a4fa0 0%,#042C53 100%)",tc:"#EBF3FF",tbg:"rgba(235,243,255,0.18)",desc:"You protect yourself by being the most capable person in the room. Your worth is tied to what you know and what you can do. When someone questions your thinking, it doesn't just feel like feedback — it feels like a threat to who you are.",truth:"The people who love you most don't need you to have all the answers. They just need you to be there.",shift:"Next time you feel the urge to explain yourself — pause. Ask a question instead."},H:{name:"The Helper",tag:"Being needed as safety",emoji:"🤝",bg:"linear-gradient(135deg,#085041 0%,#04342C 100%)",tc:"#EDFAF0",tbg:"rgba(237,250,240,0.18)",desc:"You protect yourself by being needed. If you're useful enough, maybe no one will leave. You give generously — but underneath the giving is a question you're afraid to answer: am I lovable without what I do?",truth:"You were lovable before you did anything. The giving is beautiful. The fear underneath it doesn't have to run the show.",shift:"Let someone do something for you today without deflecting. Just receive it."},W:{name:"The Wall",tag:"Distance as safety",emoji:"🌊",bg:"linear-gradient(135deg,#3C3489 0%,#26215C 100%)",tc:"#F0EEFF",tbg:"rgba(240,238,255,0.18)",desc:"You protect yourself by never fully arriving. You're present enough to connect but guarded enough to leave quickly if you need to. Intimacy feels like exposure. You've learned that the safest thing is to keep a little back.",truth:"The wall kept you safe once. It's costing you now. The people worth staying for won't use your openness against you.",shift:"Tell one person one true thing about how you're actually doing. Not the edited version."},P:{name:"The Performer",tag:"Perception as control",emoji:"🎭",bg:"linear-gradient(135deg,#993C1D 0%,#4A1B0C 100%)",tc:"#FFF0EB",tbg:"rgba(255,240,235,0.18)",desc:"You protect yourself by managing how you're perceived. You're good at reading rooms and becoming what's needed. The cost is that sometimes you lose track of who you actually are underneath the performance.",truth:"The version of you that isn't performing is the one people actually want. You just have to let them see it.",shift:"Do one thing today that you'd normally edit for an audience. Don't edit it."}};
+
+let ans={A:0,H:0,W:0,P:0},cur=0,topP=null;
+
+function goNext(n){document.getElementById('s'+n).classList.remove('active');document.getElementById('s'+(n+1)).classList.add('active');}
+function startQuiz(){document.getElementById('s1').classList.remove('active');document.getElementById('quiz').classList.add('active');render();}
+function render(){const pct=Math.round((cur/Q.length)*100);document.getElementById('pfill').style.width=pct+'%';document.getElementById('plabel').textContent='Question '+(cur+1)+' of '+Q.length;const q=Q[cur];document.getElementById('qtext').textContent=q.q;const sh=[...q.opts].sort(()=>Math.random()-0.5);document.getElementById('opts').innerHTML=sh.map((o,i)=>'<button class="option" onclick="pick(\''+o.y+'\','+i+')">'+o.t+'</button>').join('');}
+function pick(y,i){const bs=document.querySelectorAll('.option');bs.forEach(b=>b.style.pointerEvents='none');bs[i].classList.add('selected');ans[y]++;setTimeout(()=>{cur++;cur>=Q.length?showResult():render();},380);}
+function showResult(){document.getElementById('quiz').classList.remove('active');document.getElementById('result').classList.add('active');topP=Object.entries(ans).sort((a,b)=>b[1]-a[1])[0][0];const p=PR[topP];document.getElementById('rhero').style.background=p.bg;document.getElementById('rhero').innerHTML='<span class="profile-emoji">'+p.emoji+'</span><div class="profile-name" style="color:'+p.tc+'">'+p.name+'</div><div class="profile-tag" style="background:'+p.tbg+';color:'+p.tc+'">'+p.tag+'</div><div class="profile-desc" style="color:'+p.tc+'">'+p.desc+'</div>';document.getElementById('icards').innerHTML='<div class="insight-card"><div class="insight-label">the truth</div><div class="insight-text">'+p.truth+'</div></div><div class="insight-card"><div class="insight-label">one shift</div><div class="insight-text">'+p.shift+'</div></div>';}
+function shareResult(){const p=PR[topP];var txt='My TrueU profile is "'+p.name+'" — '+p.tag+'.\n\nFind yours at true-u.vercel.app';if(navigator.share){navigator.share({title:'My TrueU Profile',text:txt,url:'https://true-u.vercel.app'});}else{navigator.clipboard.writeText(txt).then(()=>{var b=document.getElementById('sbtn');b.textContent='Copied!';setTimeout(()=>b.textContent='Share your result',2000);});}}
+function restart(){ans={A:0,H:0,W:0,P:0};cur=0;topP=null;document.getElementById('result').classList.remove('active');document.getElementById('s0').classList.add('active');}
+</script>
+</body>
+</html>
