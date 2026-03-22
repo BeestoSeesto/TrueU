@@ -92,6 +92,7 @@
   </div>
 
   <div class="screen" id="result">
+    <div id="friend-banner"></div>
     <div class="result-hero" id="rhero"></div>
     <div class="insight-cards" id="icards"></div>
     <button class="btn" id="sbtn" onclick="shareResult()">Share your result</button>
@@ -112,22 +113,11 @@ function goNext(n){document.getElementById('s'+n).classList.remove('active');doc
 function startQuiz(){document.getElementById('s1').classList.remove('active');document.getElementById('quiz').classList.add('active');render();}
 function render(){const pct=Math.round((cur/Q.length)*100);document.getElementById('pfill').style.width=pct+'%';document.getElementById('plabel').textContent='Question '+(cur+1)+' of '+Q.length;const q=Q[cur];document.getElementById('qtext').textContent=q.q;const sh=[...q.opts].sort(()=>Math.random()-0.5);document.getElementById('opts').innerHTML=sh.map((o,i)=>'<button class="option" onclick="pick(\''+o.y+'\','+i+')">'+o.t+'</button>').join('');}
 function pick(y,i){const bs=document.querySelectorAll('.option');bs.forEach(b=>b.style.pointerEvents='none');bs[i].classList.add('selected');ans[y]++;setTimeout(()=>{cur++;cur>=Q.length?showResult():render();},380);}
-function showResult(){document.getElementById('quiz').classList.remove('active');document.getElementById('result').classList.add('active');topP=Object.entries(ans).sort((a,b)=>b[1]-a[1])[0][0];const p=PR[topP];document.getElementById('rhero').style.background=p.bg;document.getElementById('rhero').innerHTML='<span class="profile-emoji">'+p.emoji+'</span><div class="profile-name" style="color:'+p.tc+'">'+p.name+'</div><div class="profile-tag" style="background:'+p.tbg+';color:'+p.tc+'">'+p.tag+'</div><div class="profile-desc" style="color:'+p.tc+'">'+p.desc+'</div>';document.getElementById('icards').innerHTML='<div class="insight-card"><div class="insight-label">the truth</div><div class="insight-text">'+p.truth+'</div></div><div class="insight-card"><div class="insight-label">one shift</div><div class="insight-text">'+p.shift+'</div></div>';}
-function shareResult(){
-  if(!topP)return;
-  const p=PR[topP];
-  var txt='I just took the TrueU assessment and got "'+p.name+'" — '+p.tag+'. Take yours and tell me what you get: https://true-u.vercel.app';
-  if(navigator.share){
-    navigator.share({title:'My TrueU Profile',text:txt,url:'https://true-u.vercel.app'});
-  } else {
-    navigator.clipboard.writeText(txt).then(()=>{
-      var b=document.getElementById('sbtn');
-      b.textContent='Copied! Paste anywhere to share.';
-      setTimeout(()=>b.textContent='Share your result',2500);
-    });
-  }
-}
-function restart(){ans={A:0,H:0,W:0,P:0};cur=0;topP=null;document.getElementById('result').classList.remove('active');document.getElementById('s0').classList.add('active');}
+function showResult(){document.getElementById('quiz').classList.remove('active');document.getElementById('result').classList.add('active');topP=Object.entries(ans).sort((a,b)=>b[1]-a[1])[0][0];renderResult(topP);window.history.replaceState({},'','?p='+topP.toLowerCase());}
+function renderResult(key){const p=PR[key];document.getElementById('rhero').style.background=p.bg;document.getElementById('rhero').innerHTML='<span class="profile-emoji">'+p.emoji+'</span><div class="profile-name" style="color:'+p.tc+'">'+p.name+'</div><div class="profile-tag" style="background:'+p.tbg+';color:'+p.tc+'">'+p.tag+'</div><div class="profile-desc" style="color:'+p.tc+'">'+p.desc+'</div>';document.getElementById('icards').innerHTML='<div class="insight-card"><div class="insight-label">the truth</div><div class="insight-text">'+p.truth+'</div></div><div class="insight-card"><div class="insight-label">one shift</div><div class="insight-text">'+p.shift+'</div></div>';var fromShare=new URLSearchParams(window.location.search).get('from');if(fromShare){document.getElementById('icards').innerHTML+='<div class="insight-card" style="text-align:center"><div class="insight-label">shared by a friend</div><div class="insight-text">Someone who cares about you shared this. Now find out what program <em>you</em> are running.</div></div>';document.getElementById('sbtn').textContent='Take the quiz';document.getElementById('sbtn').onclick=function(){window.location.href='https://true-u.vercel.app';};}}
+function shareResult(){if(!topP)return;const p=PR[topP];var url='https://true-u.vercel.app?p='+topP.toLowerCase()+'&from=share';var txt='I just took TrueU and got "'+p.name+'" — '+p.tag+'.\n\nTake it and tell me what you get: '+url;if(navigator.share){navigator.share({title:'My TrueU Profile — '+p.name,text:txt,url:url});}else{navigator.clipboard.writeText(txt).then(()=>{var b=document.getElementById('sbtn');b.textContent='Copied! Paste to share.';setTimeout(()=>b.textContent='Share your result',2500);});}}
+function restart(){ans={A:0,H:0,W:0,P:0};cur=0;topP=null;window.history.replaceState({},'','?');document.getElementById('result').classList.remove('active');document.getElementById('s0').classList.add('active');}
+(function(){var params=new URLSearchParams(window.location.search);var pkey=params.get('p');var keyMap={a:'A',h:'H',w:'W',p:'P'};if(pkey&&keyMap[pkey.toLowerCase()]){topP=keyMap[pkey.toLowerCase()];document.getElementById('s0').classList.remove('active');document.getElementById('result').classList.add('active');renderResult(topP);}})();
 </script>
 </body>
 </html>
