@@ -12,18 +12,22 @@ module.exports = (req, res) => {
   const desc = profile ? profile.desc : 'You\'re not broken. You\'re running an old program. Find out which one in 5 minutes.';
   const img = profile ? profile.img : 'armor';
   const image = `https://raw.githubusercontent.com/BeestoSeesto/TrueU/main/images/${img}.png`;
+  const dest = `https://true-u.vercel.app/?p=${p}&from=share`;
   res.setHeader('Content-Type', 'text/html');
   res.send(`<!DOCTYPE html><html><head>
     <title>${title}</title>
     <meta property="og:title" content="${title}">
     <meta property="og:description" content="${desc}">
-    <meta property="og:url" content="https://true-u.vercel.app?p=${p}&from=share">
+    <meta property="og:url" content="${dest}">
     <meta property="og:type" content="website">
     <meta property="og:image" content="${image}">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:image" content="${image}">
-    <meta http-equiv="refresh" content="0;url=https://true-u.vercel.app?p=${p}&from=share">
-    </head><body></body></html>`);
+    </head>
+    <body>
+    <script>window.location.href='${dest}';</script>
+    <a href="${dest}">Click here to see your result</a>
+    </body></html>`);
 };
