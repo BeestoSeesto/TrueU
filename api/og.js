@@ -11,7 +11,7 @@ module.exports = (req, res) => {
   const title = profile ? `I got "${profile.name}" on TrueU — ${profile.tag}` : 'TrueU — Know What\'s Running';
   const desc = profile ? profile.desc : 'You\'re not broken. You\'re running an old program. Find out which one in 5 minutes.';
   const img = profile ? profile.img : 'armor';
-  const image = `https://raw.githubusercontent.com/BeestoSeesto/TrueU/main/images/${img}.svg`;
+  const image = `https://raw.githubusercontent.com/BeestoSeesto/TrueU/main/images/${img}.png`;
   res.setHeader('Content-Type', 'text/html');
   res.send(`<!DOCTYPE html><html><head>
     <title>${title}</title>
