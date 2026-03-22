@@ -1,8 +1,8 @@
 const profiles = {
-  a: { name: "The Armor", tag: "Competence as protection", desc: "I protect myself by being the most capable person in the room. What's your program?", color: "1a4fa0" },
-  h: { name: "The Helper", tag: "Being needed as safety", desc: "I protect myself by being needed. Sound familiar? What's yours?", color: "085041" },
-  w: { name: "The Wall", tag: "Distance as safety", desc: "I protect myself by never fully arriving. Which one are you?", color: "3C3489" },
-  p: { name: "The Performer", tag: "Perception as control", desc: "I protect myself by managing how I'm perceived. What's running in you?", color: "993C1D" }
+  a: { name: "The Armor", tag: "Competence as protection", desc: "I protect myself by being the most capable person in the room. What's your program?", img: "armor" },
+  h: { name: "The Helper", tag: "Being needed as safety", desc: "I protect myself by being needed. Sound familiar? What's yours?", img: "helper" },
+  w: { name: "The Wall", tag: "Distance as safety", desc: "I protect myself by never fully arriving. Which one are you?", img: "wall" },
+  p: { name: "The Performer", tag: "Perception as control", desc: "I protect myself by managing how I'm perceived. What's running in you?", img: "performer" }
 };
 
 module.exports = (req, res) => {
@@ -10,8 +10,8 @@ module.exports = (req, res) => {
   const profile = profiles[p];
   const title = profile ? `I got "${profile.name}" on TrueU — ${profile.tag}` : 'TrueU — Know What\'s Running';
   const desc = profile ? profile.desc : 'You\'re not broken. You\'re running an old program. Find out which one in 5 minutes.';
-  const color = profile ? profile.color : '1A1A18';
-  const image = `https://via.placeholder.com/1200x630/${color}/ffffff?text=${encodeURIComponent(profile ? profile.name : 'TrueU')}`;
+  const img = profile ? profile.img : 'armor';
+  const image = `https://raw.githubusercontent.com/BeestoSeesto/TrueU/main/images/${img}.svg`;
   res.setHeader('Content-Type', 'text/html');
   res.send(`<!DOCTYPE html><html><head>
     <title>${title}</title>
